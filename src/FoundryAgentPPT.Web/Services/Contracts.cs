@@ -2,7 +2,6 @@ namespace FoundryAgentPPT.Web.Services;
 
 public sealed record CreatePresentationRequest(
     string Topic,
-    IReadOnlyList<string> DocumentPaths,
     string OutputPath);
 
 public sealed record CreatePresentationResponse(string OutputPath, int SlideCount);

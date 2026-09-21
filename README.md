@@ -1,6 +1,6 @@
 # Foundry SharePoint presentation agent
 
-An ASP.NET Core app that retrieves SharePoint documents with Microsoft Graph, asks an existing Microsoft Foundry agent to create a slide outline through the Microsoft Agent Framework, and uploads the generated `.pptx` back to SharePoint.
+An ASP.NET Core app that asks an existing Foundry IQ-enabled agent to reason over its configured SharePoint knowledge sources through the Microsoft Agent Framework, generates a slide outline, and uploads the resulting `.pptx` to SharePoint with Microsoft Graph.
 
 ## Configure and run
 
@@ -13,4 +13,4 @@ export SharePoint__DriveId="<document-library-drive-id>"
 dotnet run --project src/FoundryAgentPPT.Web
 ```
 
-Open the displayed URL and provide a topic, one or more text-document paths in the selected SharePoint document library, and the destination `.pptx` path. The identity needs Microsoft Graph permissions to read and write that library plus access to the Foundry project and agent.
+Open the displayed URL and provide a topic and destination `.pptx` path. The Foundry agent must already be configured with a Foundry IQ connection to the relevant SharePoint knowledge sources. The application identity needs Microsoft Graph permission to write to the configured document library plus access to the Foundry project and agent.

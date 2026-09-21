@@ -1,16 +1,15 @@
 namespace FoundryAgentPPT.Web.Services;
 
 public sealed class PresentationWorkflow(
-    SharePointDocumentService sharePoint,
     FoundryAgentService agent,
-    PowerPointService powerPoint)
+    PowerPointService powerPoint,
+    SharePointUploadService sharePoint)
 {
     public async Task<CreatePresentationResponse> CreateAsync(
         CreatePresentationRequest request,
         CancellationToken cancellationToken)
     {
-        var documents = await sharePoint.ReadAsync(request.DocumentPaths, cancellationToken);
-        var outline = await agent.CreateOutlineAsync(request.Topic, documents, cancellationToken);
+        var outline = await agent.CreateOutlineAsync(request.Topic, cancellationToken);
         var presentation = powerPoint.Create(outline);
 
         await sharePoint.UploadAsync(request.OutputPath, presentation, cancellationToken);

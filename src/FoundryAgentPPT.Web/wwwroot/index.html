@@ -16,12 +16,10 @@
 <body>
   <main>
     <h1>Foundry presentation agent</h1>
-    <p>Use your Foundry agent to turn SharePoint research into a PowerPoint presentation.</p>
+    <p>Use your Foundry IQ-enabled agent to turn its SharePoint research into a PowerPoint presentation.</p>
     <form id="presentation-form">
       <label for="topic">Presentation topic</label>
       <input id="topic" required placeholder="Quarterly business review">
-      <label for="documents">SharePoint document paths (one per line)</label>
-      <textarea id="documents" required rows="5" placeholder="Research/summary.txt"></textarea>
       <label for="output">SharePoint output path</label>
       <input id="output" required value="Presentations/generated-presentation.pptx">
       <button type="submit">Create presentation</button>
@@ -38,7 +36,6 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           topic: document.getElementById("topic").value,
-          documentPaths: document.getElementById("documents").value.split("\n").map(x => x.trim()).filter(Boolean),
           outputPath: document.getElementById("output").value
         })
       });

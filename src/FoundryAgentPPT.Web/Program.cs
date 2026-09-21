@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<FoundryOptions>(builder.Configuration.GetSection(FoundryOptions.SectionName));
 builder.Services.Configure<SharePointOptions>(builder.Configuration.GetSection(SharePointOptions.SectionName));
-builder.Services.AddSingleton<SharePointDocumentService>();
+builder.Services.AddSingleton<SharePointUploadService>();
 builder.Services.AddSingleton<FoundryAgentService>();
 builder.Services.AddSingleton<PowerPointService>();
 builder.Services.AddSingleton<PresentationWorkflow>();
@@ -19,11 +19,11 @@ app.MapPost("/api/presentations", async (
     PresentationWorkflow workflow,
     CancellationToken cancellationToken) =>
 {
-    if (string.IsNullOrWhiteSpace(request.Topic) || request.DocumentPaths.Count == 0)
+    if (string.IsNullOrWhiteSpace(request.Topic) || string.IsNullOrWhiteSpace(request.OutputPath))
     {
         return Results.ValidationProblem(new Dictionary<string, string[]>
         {
-            ["request"] = ["A topic and at least one SharePoint document path are required."]
+            ["request"] = ["A topic and SharePoint output path are required."]
         });
     }
 

@@ -14,7 +14,6 @@ public sealed class FoundryAgentService(IOptions<FoundryOptions> options)
 
     public async Task<string> CreateOutlineAsync(
         string topic,
-        IReadOnlyList<SourceDocument> documents,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(options.ProjectEndpoint) || string.IsNullOrWhiteSpace(options.AgentName))
@@ -24,13 +23,10 @@ public sealed class FoundryAgentService(IOptions<FoundryOptions> options)
 
         var agentRecord = await project.Value.Agents.GetAgentAsync(options.AgentName, cancellationToken);
         var agent = project.Value.AsAIAgent(agentRecord.Value);
-        var sources = string.Join(
-            "\n\n",
-            documents.Select(document => $"SOURCE: {document.Path}\n{document.Text}"));
         var response = await agent.RunAsync(
-            $"Create a concise slide outline for '{topic}' using only the sources below. " +
-            "Return one slide per line using the format: Title | bullet one; bullet two; bullet three.\n\n" +
-            sources,
+            $"Use your configured Foundry IQ knowledge sources to research '{topic}'. " +
+            "Create a concise slide outline. Return one slide per line using the format: " +
+            "Title | bullet one; bullet two; bullet three.",
             cancellationToken: cancellationToken);
 
         return response.Text;
