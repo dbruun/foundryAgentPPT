@@ -21,3 +21,12 @@ public sealed class SharePointOptions
 
     public string DriveId { get; init; } = string.Empty;
 }
+
+public sealed class EntraIdOptions
+{
+    public const string SectionName = "EntraId";
+
+    public string Authority { get; init; } = string.Empty;
+
+    public string Audience { get; init; } = string.Empty;
+}

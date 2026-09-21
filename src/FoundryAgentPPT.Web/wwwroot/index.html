@@ -22,6 +22,8 @@
       <input id="topic" required placeholder="Quarterly business review">
       <label for="output">SharePoint output path</label>
       <input id="output" required value="Presentations/generated-presentation.pptx">
+      <label for="token">Microsoft Entra access token</label>
+      <input id="token" type="password" required autocomplete="off">
       <button type="submit">Create presentation</button>
     </form>
     <output id="result"></output>
@@ -33,7 +35,10 @@
       result.textContent = "Creating presentation…";
       const response = await fetch("/api/presentations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Authorization": "Bearer " + document.getElementById("token").value,
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           topic: document.getElementById("topic").value,
           outputPath: document.getElementById("output").value
