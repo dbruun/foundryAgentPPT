@@ -24,4 +24,10 @@ public sealed class PowerPointServiceTests
         Assert.True(validationErrors.Count == 0, string.Join(Environment.NewLine, validationErrors.Select(error => error.Description)));
         Assert.Equal(2, service.CountSlides("Introduction | Purpose\nResults | Revenue"));
     }
+
+    [Fact]
+    public void Create_rejects_an_empty_outline()
+    {
+        Assert.Throws<InvalidOperationException>(() => new PowerPointService().Create(" \n "));
+    }
 }

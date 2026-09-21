@@ -7,6 +7,15 @@ namespace FoundryAgentPPT.Web.Services;
 
 public sealed class PowerPointService
 {
+    private const long TitleX = 457200;
+    private const long TitleY = 274638;
+    private const long TitleWidth = 11239500;
+    private const long TitleHeight = 914400;
+    private const int TitleFontSize = 3200;
+    private const long ContentY = 1371600;
+    private const long ContentHeight = 4572000;
+    private const int ContentFontSize = 1800;
+
     public MemoryStream Create(string outline)
     {
         var stream = new MemoryStream();
@@ -56,7 +65,9 @@ public sealed class PowerPointService
                 parts.Length == 2
                     ? parts[1].Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                     : []))
-            .ToList();
+            .ToList() is { Count: > 0 } slides
+                ? slides
+                : throw new InvalidOperationException("The agent returned an empty slide outline.");
 
     private static P.ShapeTree CreateShapeTree(SlideContent content)
     {
@@ -67,18 +78,33 @@ public sealed class PowerPointService
                 new P.ApplicationNonVisualDrawingProperties()),
             new P.GroupShapeProperties(new A.TransformGroup()));
 
-        tree.Append(CreateTextShape(2U, "Title", content.Title, 457200, 274638, 11239500, 914400, 3200));
-        tree.Append(CreateTextShape(
-            3U,
-            "Content",
-            string.Join('\n', content.Bullets.Select(bullet => $"• {bullet}")),
-            457200,
-            1371600,
-            11239500,
-            4572000,
-            1800));
+        tree.Append(CreateTextShape(2U, "Title", content.Title, TitleX, TitleY, TitleWidth, TitleHeight, TitleFontSize));
+        tree.Append(CreateBulletShape(content));
 
         return tree;
+    }
+
+    private static P.Shape CreateBulletShape(SlideContent content)
+    {
+        var textBody = new P.TextBody(new A.BodyProperties(), new A.ListStyle());
+        foreach (var bullet in content.Bullets.DefaultIfEmpty(string.Empty))
+        {
+            textBody.Append(new A.Paragraph(
+                new A.Run(
+                    new A.RunProperties { FontSize = ContentFontSize },
+                    new A.Text($"• {bullet}"))));
+        }
+
+        return new P.Shape(
+            new P.NonVisualShapeProperties(
+                new P.NonVisualDrawingProperties { Id = 3U, Name = "Content" },
+                new P.NonVisualShapeDrawingProperties(new A.ShapeLocks { NoGrouping = true }),
+                new P.ApplicationNonVisualDrawingProperties()),
+            new P.ShapeProperties(
+                new A.Transform2D(
+                    new A.Offset { X = TitleX, Y = ContentY },
+                    new A.Extents { Cx = TitleWidth, Cy = ContentHeight })),
+            textBody);
     }
 
     private static SlideLayoutPart CreateLayout(PresentationPart presentationPart)
