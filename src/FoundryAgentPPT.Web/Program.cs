@@ -27,8 +27,15 @@ app.MapPost("/api/presentations", async (
         });
     }
 
-    var result = await workflow.CreateAsync(request, cancellationToken);
-    return Results.Ok(result);
+    try
+    {
+        var result = await workflow.CreateAsync(request, cancellationToken);
+        return Results.Ok(result);
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(exception.Message, statusCode: StatusCodes.Status400BadRequest);
+    }
 });
 
 app.MapFallbackToFile("index.html");
