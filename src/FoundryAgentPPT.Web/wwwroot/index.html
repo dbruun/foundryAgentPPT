@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Foundry presentation agent</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f5f7fb; color: #172033; margin: 0; }
+    main { max-width: 720px; margin: 3rem auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px #0001; }
+    label, input, textarea, button { display: block; width: 100%; box-sizing: border-box; margin-top: .5rem; }
+    label { font-weight: 600; margin-top: 1.25rem; } input, textarea { padding: .7rem; border: 1px solid #aab3c5; border-radius: 5px; }
+    button { margin-top: 1.5rem; background: #0f6cbd; border: 0; border-radius: 5px; color: white; font-weight: 600; padding: .8rem; cursor: pointer; }
+    #result { white-space: pre-wrap; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Foundry presentation agent</h1>
+    <p>Use your Foundry agent to turn SharePoint research into a PowerPoint presentation.</p>
+    <form id="presentation-form">
+      <label for="topic">Presentation topic</label>
+      <input id="topic" required placeholder="Quarterly business review">
+      <label for="documents">SharePoint document paths (one per line)</label>
+      <textarea id="documents" required rows="5" placeholder="Research/summary.txt"></textarea>
+      <label for="output">SharePoint output path</label>
+      <input id="output" required value="Presentations/generated-presentation.pptx">
+      <button type="submit">Create presentation</button>
+    </form>
+    <output id="result"></output>
+  </main>
+  <script>
+    document.getElementById("presentation-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const result = document.getElementById("result");
+      result.textContent = "Creating presentation…";
+      const response = await fetch("/api/presentations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: document.getElementById("topic").value,
+          documentPaths: document.getElementById("documents").value.split("\n").map(x => x.trim()).filter(Boolean),
+          outputPath: document.getElementById("output").value
+        })
+      });
+      const body = await response.json();
+      result.textContent = response.ok
+        ? `Created ${body.slideCount} slides at ${body.outputPath}.`
+        : body.detail || Object.values(body.errors || {}).flat().join(" ");
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FoundryAgentPPT.Web/FoundryAgentPPT.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FoundryAgentPPT.Web.Tests/FoundryAgentPPT.Web.Tests.csproj" />
+  </Folder>
+</Solution>
